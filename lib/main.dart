@@ -218,59 +218,67 @@ class _GistListState extends State<GistList> {
     final _alreadyStarred = _starred.contains(gist.id);
     final _firstFile = gist.files.values.toList()[0];
 
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(gist.owner.avatarUrl),
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 680),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(gist.owner.avatarUrl),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 8),
+                          child: Text(gist.owner.login),
+                        )
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        children: [
-                          Text(gist.owner.login),
-                          Text(" / "),
-                          InkWell(
-                              child: Text(_firstFile.filename,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
-                              onTap: () => launch(gist.url)),
-                          IconButton(
-                            icon: Icon(_alreadyStarred
-                                ? Icons.star
-                                : Icons.star_border),
-                            onPressed: () {
-                              setStarred(gist.id);
-                            },
-                            hoverColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  child: Text(gist.description != null ? gist.description : "",
-                      style: TextStyle(fontSize: 12)),
-                  alignment: Alignment.centerLeft,
-                ),
-                Container(
-                  child: _buildContent(_firstFile.rawUrl),
-                  alignment: Alignment.centerLeft,
-                ),
-              ],
+                  ),
+                  Wrap(
+                    children: [
+                      InkWell(
+                        child: Text(_firstFile.filename,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                        onTap: () => launch(gist.url),
+                      )
+                    ],
+                  ),
+                  Container(
+                    child: Text(
+                        gist.description != null ? gist.description : "",
+                        style: TextStyle(fontSize: 12)),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  Container(
+                    child: _buildContent(_firstFile.rawUrl),
+                    alignment: Alignment.centerLeft,
+                  ),
+                ],
+              ),
             ),
           ),
-        )
-      ],
+          IconButton(
+            icon: Icon(_alreadyStarred ? Icons.star : Icons.star_border),
+            onPressed: () {
+              setStarred(gist.id);
+            },
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent,
+          ),
+        ],
+      ),
     );
   }
 
@@ -285,10 +293,7 @@ class _GistListState extends State<GistList> {
             future: fetchContent(http.Client(), url),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text(
-                  snapshot.data,
-                  overflow: TextOverflow.fade,
-                );
+                return Text(snapshot.data);
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               }
